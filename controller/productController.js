@@ -123,7 +123,7 @@ const getProducts = asyncHandler(async (req, res) => {
       } else if (options.includes(field)) {
         queryObject[field][operator] = Number(value);
       }
-      console.log(queryObject[field][operator]);
+      //console.log(queryObject[field][operator]);
     });
     console.log(queryObject);
   }

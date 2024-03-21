@@ -34,7 +34,9 @@ app.use(
       "http://localhost:3000",
       "http://localhost:3001",
       "http://localhost:3002",
-      `https://shopito-admin.netlify.app`,
+      `https://shopito-admin.vercel.app`,
+      `https://shopito-admin-4vdofzx4x-md-wasim-akrams-projects.vercel.app`,
+      `https://shopito-admin-git-main-md-wasim-akrams-projects.vercel.app/`,
     ],
     credentials: true,
   })

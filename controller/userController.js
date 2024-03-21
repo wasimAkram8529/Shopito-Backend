@@ -103,8 +103,8 @@ const loginAdmin = asyncHandler(async (req, res) => {
       path: "/",
       httpOnly: true,
       expires: new Date(Date.now() + 1000 * 86400),
-      //secure: true,
-      //sameSite: none,
+      secure: true,
+      sameSite: "none",
     });
 
     // Send User data

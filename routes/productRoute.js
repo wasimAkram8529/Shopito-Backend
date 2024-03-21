@@ -27,6 +27,5 @@ router.delete("/:id", protect, adminOnly, deleteProduct);
 // Patch Methods
 router.patch("/updateReview/:id", protect, updateReview);
 router.patch("/:id", protect, adminOnly, updateProduct);
-router.patch("/:id", protect, adminOnly, updateProduct);
 
 module.exports = router;

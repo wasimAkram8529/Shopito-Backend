@@ -88,9 +88,11 @@ const getProducts = asyncHandler(async (req, res) => {
   console.log(queryObject);
   const products = await Product.find(queryObject).sort("-createdAt");
   res.status(200).json(products);*/
-  const { featured, company, name, sort, fields, numericFilters } = req.query;
+  const { featured, company, name, sort, fields, numericFilters, tags } =
+    req.query;
   const queryObject = {};
   //console.log(numericFilters);
+  console.log(tags);
 
   if (featured) {
     queryObject.featured = featured === "true" ? true : false;
@@ -100,6 +102,9 @@ const getProducts = asyncHandler(async (req, res) => {
   }
   if (name) {
     queryObject.name = { $regex: name, $options: "i" };
+  }
+  if (tags) {
+    queryObject.tags = tags;
   }
   if (numericFilters) {
     const operatorMap = {
@@ -114,7 +119,7 @@ const getProducts = asyncHandler(async (req, res) => {
       regEx,
       (match) => `-${operatorMap[match]}-`
     );
-    console.log(filters);
+    //console.log(filters);
     const options = ["price", "rating"];
     filters = filters.split(",").forEach((item) => {
       const [field, operator, value] = item.split("-");
@@ -125,10 +130,10 @@ const getProducts = asyncHandler(async (req, res) => {
       }
       //console.log(queryObject[field][operator]);
     });
-    console.log(queryObject);
+    // console.log(queryObject);
   }
 
-  let result = Product.find(queryObject);
+  let result = Product.find(queryObject).populate("color");
   // sort
   if (sort) {
     const sortList = sort.split(",").join(" ");

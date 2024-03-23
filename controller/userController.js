@@ -58,8 +58,8 @@ const loginUser = asyncHandler(async (req, res) => {
       path: "/",
       httpOnly: true,
       expires: new Date(Date.now() + 1000 * 86400),
-      //secure: true, // Only use with HTTPS
-      //sameSite: "None", // Allow cross-site cookies
+      secure: true, // Only use with HTTPS
+      sameSite: "None", // Allow cross-site cookies
     });
 
     res.status(201).json(newUser);
@@ -141,10 +141,10 @@ const logOut = asyncHandler(async (req, res) => {
     path: "/",
     httpOnly: true,
     expires: new Date(0),
-    //secure: true,
-    //sameSite: none,
+    secure: true,
+    sameSite: "none",
   });
-  res.status(200).json({ message: "Successfullly Logged Out" });
+  res.status(200).json({ message: "Successfully Logged Out" });
 });
 
 // Update Password

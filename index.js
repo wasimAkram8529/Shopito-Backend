@@ -37,6 +37,7 @@ app.use(
       `https://shopito-admin.vercel.app`,
       `https://shopito-admin-4vdofzx4x-md-wasim-akrams-projects.vercel.app`,
       `https://shopito-admin-git-main-md-wasim-akrams-projects.vercel.app/`,
+      `https://shopito-frontend.vercel.app`,
     ],
     credentials: true,
   })

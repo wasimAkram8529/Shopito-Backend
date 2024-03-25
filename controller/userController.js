@@ -424,7 +424,8 @@ const updateCartQuantity = asyncHandler(async (req, res) => {
     });
   }
 
-  res.status(200).json(updatedCartItem);
+  const cart = await Cart.find({ userId: _id }).populate("productId color");
+  res.status(200).json(cart);
 });
 
 // Get User cart

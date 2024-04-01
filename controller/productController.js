@@ -55,45 +55,11 @@ const createProduct = asyncHandler(async (req, res) => {
 
 // Get All Products
 const getProducts = asyncHandler(async (req, res) => {
-  /*let queryObject1 = { ...req.query };
-  const excludeQuery = ["page", "sort", "limit", "fields"];
-  excludeQuery.forEach((query) => delete queryObject1[query]);
-  console.log(queryObject1);
-  const { numericFilters } = queryObject1;
-
-  const queryObject = { ...queryObject1 };
-  if (numericFilters) {
-    const operatorMap = {
-      ">": "$gt",
-      ">=": "$gte",
-      "=": "$eq",
-      "<": "$lt",
-      "<=": "$lte",
-    };
-    const regEx = /\b(<|>|>=|=|<|<=)\b/g;
-    let filters = numericFilters.replace(
-      regEx,
-      (match) => `-${operatorMap[match]}-`
-    );
-    const options = ["price", "rating"];
-    filters = filters.split(",").forEach((item) => {
-      const [field, operator, value] = item.split("-");
-      if (options.includes(field)) {
-        queryObject[field] = { [operator]: Number(value) };
-      }
-    });
-    delete queryObject["numericFilters"];
-  }
-
-  console.log(queryObject);
-  const products = await Product.find(queryObject).sort("-createdAt");
-  res.status(200).json(products);*/
   const { featured, company, name, sort, fields, numericFilters, tags } =
     req.query;
   const queryObject = {};
-  //console.log(numericFilters);
-  console.log(tags);
 
+  //console.log(numericFilters);
   if (featured) {
     queryObject.featured = featured === "true" ? true : false;
   }
@@ -106,7 +72,10 @@ const getProducts = asyncHandler(async (req, res) => {
   if (tags) {
     queryObject.tags = tags;
   }
+
   if (numericFilters) {
+    const newNumericFilter = numericFilters.replace("&lt;", "<");
+    //console.log(newNumericFilter);
     const operatorMap = {
       ">": "$gt",
       ">=": "$gte",
@@ -115,7 +84,7 @@ const getProducts = asyncHandler(async (req, res) => {
       "<=": "$lte",
     };
     const regEx = /\b(<|>|>=|=|<|<=)\b/g;
-    let filters = numericFilters.replace(
+    let filters = newNumericFilter.replace(
       regEx,
       (match) => `-${operatorMap[match]}-`
     );
@@ -130,7 +99,7 @@ const getProducts = asyncHandler(async (req, res) => {
       }
       //console.log(queryObject[field][operator]);
     });
-    // console.log(queryObject);
+    //console.log(queryObject);
   }
 
   let result = Product.find(queryObject).populate("color");

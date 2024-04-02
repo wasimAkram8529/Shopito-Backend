@@ -33,7 +33,27 @@ const updateBlog = asyncHandler(async (req, res) => {
 
 // Get All Blog
 const getAllBlog = asyncHandler(async (req, res) => {
-  const blog = await Blog.find({});
+  const { sort, tags, category } = req.query;
+  //console.log(category);
+  let queyObject = {};
+
+  if (category) {
+    queyObject.category = category;
+  }
+
+  if (tags) {
+    queyObject.tags = tags;
+  }
+
+  //console.log(queyObject);
+
+  const blog = await Blog.find(queyObject);
+
+  // if (sort) {
+  //   const sortList = sort.split(",").join(" ");
+  //   let result = await blog.sort(sortList);
+  //   console.log(result);
+  // }
   res.status(200);
   res.json(blog);
 });

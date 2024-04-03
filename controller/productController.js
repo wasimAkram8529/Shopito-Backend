@@ -55,8 +55,16 @@ const createProduct = asyncHandler(async (req, res) => {
 
 // Get All Products
 const getProducts = asyncHandler(async (req, res) => {
-  const { featured, company, name, sort, fields, numericFilters, tags } =
-    req.query;
+  const {
+    featured,
+    company,
+    name,
+    sort,
+    fields,
+    numericFilters,
+    tags,
+    category,
+  } = req.query;
   const queryObject = {};
 
   //console.log(numericFilters);
@@ -71,6 +79,9 @@ const getProducts = asyncHandler(async (req, res) => {
   }
   if (tags) {
     queryObject.tags = tags;
+  }
+  if (category) {
+    queryObject.category = category;
   }
 
   if (numericFilters) {

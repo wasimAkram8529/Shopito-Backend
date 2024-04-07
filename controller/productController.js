@@ -332,6 +332,8 @@ const updateReview = asyncHandler(async (req, res) => {
   const { star, review, reviewDate, userId } = req.body;
   const { id } = req.params;
 
+  // console.log(id, star, review, userId);
+
   // Validation
   if (star < 1) {
     res.status(400);
@@ -339,6 +341,8 @@ const updateReview = asyncHandler(async (req, res) => {
   }
 
   const product = await Product.findById(id);
+
+  // console.log(product);
 
   if (!product) {
     res.status(400);
@@ -355,8 +359,10 @@ const updateReview = asyncHandler(async (req, res) => {
 
   //console.log(product.ratings);
   // Update product Review
+  let reviewMatched = false;
   const newRating = product?.ratings.map((item) => {
     if (item?.userId?.toString() === userId) {
+      reviewMatched = true;
       item.star = star;
       item.review = review;
       item.reviewDate = reviewDate;
@@ -365,21 +371,8 @@ const updateReview = asyncHandler(async (req, res) => {
   });
   product.ratings = newRating;
   const updatedReview = await product.save();
-  // const updatedReview = await Product.findOneAndUpdate(
-  //   {
-  //     _id: product._id,
-  //     "ratings.userId": userId,
-  //   },
-  //   {
-  //     $set: {
-  //       "ratings.$.star": star,
-  //       "ratings.$.review": review,
-  //       "ratings.$.reviewDate": reviewDate,
-  //     },
-  //   }
-  // );
 
-  if (updatedReview) {
+  if (reviewMatched) {
     res.status(200).json({ updatedReview, message: "Product review updated" });
   } else {
     res.status(400).json({ message: "Product review not updated" });

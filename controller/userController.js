@@ -403,6 +403,39 @@ const userCart = asyncHandler(async (req, res, next) => {
   //   products.push(object);
   // }
 });
+const clearCart = asyncHandler(async (req, res, next) => {
+  const { _id } = req.user;
+  validateMongoDbid(_id);
+  try {
+    const newCart = await User.findByIdAndDelete({
+      userId: _id,
+    });
+    res.status(200).json({ message: "All item deleted" });
+  } catch (error) {
+    next(error);
+  }
+
+  // let products = [];
+  // const user = req.user;
+  // const alreadyExistCart = await Cart.findOne({ orderby: _id });
+  // if (alreadyExistCart) {
+  //   // update it later according to working of site
+  //   // Use deleteOne to remove the found document
+  //   await Cart.deleteOne({ orderby: _id });
+  // }
+
+  // let cartTotal = 0;
+  // for (let i = 0; i < cart.length; i++) {
+  //   let object = {};
+  //   object.product = cart[i]._id;
+  //   object.count = cart[i].count;
+  //   object.color = cart[i].color;
+  //   let getPrice = await Product.findById(cart[i]._id).select("price").exec();
+  //   object.prize = getPrice.price;
+  //   cartTotal += cart[i].count * getPrice.price;
+  //   products.push(object);
+  // }
+});
 
 // update Cart Quantity
 const updateCartQuantity = asyncHandler(async (req, res) => {
@@ -670,6 +703,7 @@ module.exports = {
   getAllWishlist,
   saveAddress,
   userCart,
+  clearCart,
   getUserCart,
   applyCoupon,
   createOrder,

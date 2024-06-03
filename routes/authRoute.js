@@ -29,6 +29,7 @@ const {
   getAllOrders,
   getMonthlyOrderIncomeAndCount,
   getYearlyOrderCount,
+  clearCart,
 } = require("../controller/userController");
 const { protect, adminOnly } = require("../middlewares/authMiddleware");
 const { addToWishList } = require("../controller/productController");
@@ -124,5 +125,6 @@ router.post("/unblock-user/:id", protect, adminOnly, unBlockUser);
 
 // Delete One Item From cart
 router.delete("/cart/:id", protect, removeItemFromCart);
+router.delete("/cart/clearCart", protect, clearCart);
 
 module.exports = router;

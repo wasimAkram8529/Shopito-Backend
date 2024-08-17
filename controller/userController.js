@@ -10,6 +10,7 @@ const crypto = require("crypto");
 const Coupon = require("../models/couponModel");
 const Order = require("../models/orderModel");
 const uniqId = require("uniqid");
+const { ok } = require("assert");
 
 // Generate JWT
 const generateToken = (id) => {
@@ -44,7 +45,7 @@ const loginUser = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email });
   if (!user) {
     res.status(400);
-    throw new Error("User doesnot exist");
+    throw new Error("User does not exist");
     return;
   }
 
@@ -407,34 +408,19 @@ const clearCart = asyncHandler(async (req, res, next) => {
   const { _id } = req.user;
   validateMongoDbid(_id);
   try {
-    const newCart = await User.findByIdAndDelete({
-      userId: _id,
-    });
-    res.status(200).json({ message: "All item deleted" });
+    const result = await Cart.deleteOne({ userId: _id });
+    if (result.deletedCount === 0) {
+      return res
+        .status(404)
+        .json({ status: "error", message: "Cart not found" });
+    }
+
+    res
+      .status(200)
+      .json({ status: "ok", message: "Cart cleared successfully" });
   } catch (error) {
     next(error);
   }
-
-  // let products = [];
-  // const user = req.user;
-  // const alreadyExistCart = await Cart.findOne({ orderby: _id });
-  // if (alreadyExistCart) {
-  //   // update it later according to working of site
-  //   // Use deleteOne to remove the found document
-  //   await Cart.deleteOne({ orderby: _id });
-  // }
-
-  // let cartTotal = 0;
-  // for (let i = 0; i < cart.length; i++) {
-  //   let object = {};
-  //   object.product = cart[i]._id;
-  //   object.count = cart[i].count;
-  //   object.color = cart[i].color;
-  //   let getPrice = await Product.findById(cart[i]._id).select("price").exec();
-  //   object.prize = getPrice.price;
-  //   cartTotal += cart[i].count * getPrice.price;
-  //   products.push(object);
-  // }
 });
 
 // update Cart Quantity
@@ -469,7 +455,7 @@ const getUserCart = asyncHandler(async (req, res) => {
   res.status(200).json(cart);
 });
 
-// Empty Cart
+// remove item from Cart
 const removeItemFromCart = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   const { id } = req.params;
@@ -537,6 +523,7 @@ const createOrder = asyncHandler(async (req, res) => {
     totalPrice,
     totalPriceAfterDiscount,
     paymentInfo,
+    deliveryDate,
   } = req.body;
   const { _id } = req.user;
 
@@ -550,9 +537,10 @@ const createOrder = asyncHandler(async (req, res) => {
       totalPrice,
       totalPriceAfterDiscount,
       paymentInfo,
+      deliveryDate,
     });
 
-    res.status(200).json(newOrder);
+    res.status(200).json({ status: "ok", newOrder });
   } catch (error) {
     throw new Error(error);
   }

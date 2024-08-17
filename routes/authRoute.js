@@ -124,7 +124,7 @@ router.post("/block-user/:id", protect, adminOnly, blockUser);
 router.post("/unblock-user/:id", protect, adminOnly, unBlockUser);
 
 // Delete One Item From cart
-router.delete("/cart/:id", protect, removeItemFromCart);
+router.delete("/cart/remove-item/:id", protect, removeItemFromCart);
 router.delete("/cart/clearCart", protect, clearCart);
 
 module.exports = router;

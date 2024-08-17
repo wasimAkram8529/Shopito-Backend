@@ -84,7 +84,7 @@ const productSchema = mongoose.Schema(
         },
       },
     ],
-    totalrating: {
+    totalRating: {
       type: String,
       default: 0,
     },

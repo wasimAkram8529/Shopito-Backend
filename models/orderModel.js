@@ -77,6 +77,9 @@ const orderSchema = new mongoose.Schema(
       type: Date,
       default: Date.now(),
     },
+    deliveryDate: {
+      type: String,
+    },
     month: {
       type: String,
       default: new Date().getMonth(),

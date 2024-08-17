@@ -286,7 +286,7 @@ const reviewProduct = asyncHandler(async (req, res) => {
     let actualRating = Math.round(ratingSum / totalRating);
     product = await Product.findByIdAndUpdate(
       id,
-      { totalrating: actualRating },
+      { totalRating: actualRating },
       {
         new: true,
         runValidators: true,

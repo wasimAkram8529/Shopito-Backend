@@ -175,13 +175,36 @@ const updatePassword = asyncHandler(async (req, res) => {
 const forgotPasswordToken = asyncHandler(async (req, res) => {
   const { email } = req.body;
   const user = await User.findOne({ email });
+  console.log("user", user);
   if (!user) {
     res.status(404);
     throw new Error("User not Found");
   } else {
     const token = await user.createPasswordResetToken();
     await user.save();
-    const resetURL = `Hii, Please Follow this link to reset Your Password. This link is valid till 10 minute from now. <a href='http://localhost:3000/reset-password/${token}'>Click Here</ a>`;
+    const resetURL = `Hii, Please Follow this link to reset Your Password. This link is valid till 10 minute from now. <a href='shopito-frontend.vercel.app/reset-password/${token}'>Click Here</ a>`;
+    const data = {
+      to: email,
+      text: "Hey User",
+      subject: "Forgot Password Link",
+      html: resetURL,
+    };
+    sendEmail(data);
+    res.json({ token });
+  }
+});
+
+const adminForgotPasswordToken = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+  console.log("user", user);
+  if (!user) {
+    res.status(404);
+    throw new Error("User not Found");
+  } else {
+    const token = await user.createPasswordResetToken();
+    await user.save();
+    const resetURL = `Hii, Please Follow this link to reset Your Password. This link is valid till 10 minute from now. <a href='shopito-admin.vercel.app/reset-password/${token}'>Click Here</ a>`;
     const data = {
       to: email,
       text: "Hey User",
@@ -583,11 +606,11 @@ const getAOrder = asyncHandler(async (req, res) => {
 // Update Order Status
 const updateOrderStatus = asyncHandler(async (req, res) => {
   const { status } = req.body;
+  const { _id } = req.user;
   const { id } = req.params;
-  console.log(status, id);
   validateMongoDbid(id);
   const order = await Order.findByIdAndUpdate(
-    id,
+    { user: _id, _id: id },
     {
       orderStatus: status,
     },
@@ -595,12 +618,11 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
       new: true,
       runValidators: true,
     }
-  );
+  ).populate("user orderItems.product orderItems.color");
 
-  const orders = await Order.find().populate(
-    "user orderItems.product orderItems.color"
-  );
-  res.status(200).json(orders);
+  const updatedOrder = [];
+  updatedOrder.push(order);
+  res.status(200).json(updatedOrder);
 });
 
 const getMonthlyOrderIncomeAndCount = asyncHandler(async (req, res) => {
@@ -686,6 +708,7 @@ module.exports = {
   unBlockUser,
   updatePassword,
   forgotPasswordToken,
+  adminForgotPasswordToken,
   resetPassword,
   loginAdmin,
   getAllWishlist,

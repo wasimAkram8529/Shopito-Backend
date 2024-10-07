@@ -30,6 +30,7 @@ const {
   getMonthlyOrderIncomeAndCount,
   getYearlyOrderCount,
   clearCart,
+  adminForgotPasswordToken,
 } = require("../controller/userController");
 const { protect, adminOnly } = require("../middlewares/authMiddleware");
 const { addToWishList } = require("../controller/productController");
@@ -105,6 +106,7 @@ router.patch("/update-password", protect, updatePassword);
 
 // Forgot Password
 router.patch("/forgot-password-token", forgotPasswordToken);
+router.patch("/admin-forgot-password-token", adminForgotPasswordToken);
 
 // Reset Password
 router.patch("/reset-password/:token", resetPassword);

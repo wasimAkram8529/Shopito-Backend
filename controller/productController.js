@@ -67,7 +67,6 @@ const getProducts = asyncHandler(async (req, res) => {
   } = req.query;
   const queryObject = {};
 
-  //console.log(numericFilters);
   if (featured) {
     queryObject.featured = featured === "true" ? true : false;
   }
@@ -86,7 +85,6 @@ const getProducts = asyncHandler(async (req, res) => {
 
   if (numericFilters) {
     const newNumericFilter = numericFilters.replace("&lt;", "<");
-    //console.log(newNumericFilter);
     const operatorMap = {
       ">": "$gt",
       ">=": "$gte",
@@ -99,7 +97,6 @@ const getProducts = asyncHandler(async (req, res) => {
       regEx,
       (match) => `-${operatorMap[match]}-`
     );
-    //console.log(filters);
     const options = ["price", "rating"];
     filters = filters.split(",").forEach((item) => {
       const [field, operator, value] = item.split("-");
@@ -108,9 +105,7 @@ const getProducts = asyncHandler(async (req, res) => {
       } else if (options.includes(field)) {
         queryObject[field][operator] = Number(value);
       }
-      //console.log(queryObject[field][operator]);
     });
-    //console.log(queryObject);
   }
 
   let result = Product.find(queryObject).populate("color");
@@ -174,29 +169,43 @@ const updateProduct = asyncHandler(async (req, res) => {
     price,
     color,
   } = req.body;
-  const product = await Product.findById(req.params.id);
+
+  let allColors;
+  if (typeof color?.[0] === "object") {
+    allColors = color.map((singleColor) => {
+      return singleColor.value;
+    });
+  } else {
+    allColors = color;
+  }
+
+  const product = await Product.findById({ _id: req.params.id });
   if (!product) {
     res.status(404);
     throw new Error("Product not found.");
   } else {
     const slug = title ? slugify(title) : product.slug;
-    const updatedProduct = await Product.findByIdAndUpdate(
-      { _id: req.params.id },
-      {
-        title,
-        category,
-        slug,
-        brand,
-        quantity,
-        description,
-        image,
-        regularPrice,
-        price,
-        color,
-      },
-      { new: true, runValidators: true }
-    );
-    res.status(200).json(updatedProduct);
+    try {
+      const updatedProduct = await Product.findByIdAndUpdate(
+        { _id: req.params.id },
+        {
+          title,
+          category,
+          slug,
+          brand,
+          quantity,
+          description,
+          image,
+          regularPrice,
+          price,
+          color: allColors,
+        },
+        { new: true, runValidators: true }
+      );
+      res.status(200).json(updatedProduct);
+    } catch (error) {
+      console.log(error);
+    }
   }
 });
 
@@ -233,7 +242,6 @@ const addToWishList = asyncHandler(async (req, res) => {
 const reviewProduct = asyncHandler(async (req, res) => {
   const { star, review, reviewDate, userId } = req.body;
   const { id } = req.params;
-  //console.log(userId);
 
   // Validation
   if (star < 1) {
@@ -303,7 +311,6 @@ const reviewProduct = asyncHandler(async (req, res) => {
 const deleteReview = asyncHandler(async (req, res) => {
   const { userId } = req.body;
 
-  //console.log()
   try {
     let product = await Product.findById(req.params.id);
     if (!product) {
@@ -318,7 +325,6 @@ const deleteReview = asyncHandler(async (req, res) => {
 
     product.ratings = newRatings;
     product = await product.save();
-    //console.log(product);
 
     res.status(200).json({ product, message: "Product rating deleted." });
   } catch (error) {
@@ -332,8 +338,6 @@ const updateReview = asyncHandler(async (req, res) => {
   const { star, review, reviewDate, userId } = req.body;
   const { id } = req.params;
 
-  // console.log(id, star, review, userId);
-
   // Validation
   if (star < 1) {
     res.status(400);
@@ -341,8 +345,6 @@ const updateReview = asyncHandler(async (req, res) => {
   }
 
   const product = await Product.findById(id);
-
-  // console.log(product);
 
   if (!product) {
     res.status(400);
@@ -357,7 +359,6 @@ const updateReview = asyncHandler(async (req, res) => {
     return;
   }
 
-  //console.log(product.ratings);
   // Update product Review
   let reviewMatched = false;
   const newRating = product?.ratings.map((item) => {
